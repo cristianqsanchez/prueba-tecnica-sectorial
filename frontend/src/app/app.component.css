@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+app-category-form {
+  width: 30%;
+}
+
+app-category-tree {
+  width: 60%;
+}
+

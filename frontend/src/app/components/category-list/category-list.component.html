@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="card form-container">
+    <h1>Crear Categoría</h1>
+
+    <form (ngSubmit)="createCategory()" class="category-form">
+      <label for="name">Nombre de la Categoría:</label>
+      <input type="text" id="name" [(ngModel)]="newCategory.name" name="name" required />
+
+      <label for="type">Tipo de Categoría:</label>
+      <select id="type" [(ngModel)]="newCategory.type" name="type" (change)="loadAvailableParents()" required>
+        <option value="">Seleccione tipo</option>
+        <option value="category">Categoría</option>
+        <option value="subcategory">Subcategoría</option>
+        <option value="topic">Tema</option>
+      </select>
+
+      <label for="parent">Categoría Padre:</label>
+      <select id="parent" [(ngModel)]="newCategory.parent" name="parent" required *ngIf="newCategory.type !== 'category'">
+        <option value="">Seleccione una categoría padre</option>
+        <option *ngFor="let parent of availableParents" [value]="parent._id">{{ parent.name }}</option>
+      </select>
+
+      <button type="submit" class="btn-submit">Crear Categoría</button>
+    </form>
+
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </div>
+
+  <div class="card list-container">
+    <h2>Categorías Existentes</h2>
+    <ul>
+      <ng-container *ngFor="let category of categories">
+        <ng-container *ngIf="category.type === 'category'">
+          <li>
+            {{ category.name }} ({{ category.type }})
+            <span *ngIf="category.parent"> - Padre: {{ category.parent.name }}</span>
+            <button *ngIf="!category.hasChildren" (click)="deleteCategory(category._id)">Eliminar</button>
+
+            <ul *ngIf="category.hasChildren">
+              <ng-container *ngFor="let child of categories">
+                <ng-container *ngIf="child.parent && child.parent._id === category._id">
+                  <li>
+                    {{ child.name }} ({{ child.type }})
+                    <button *ngIf="!child.hasChildren" (click)="deleteCategory(child._id)">Eliminar</button>
+                    <ul *ngIf="child.type === 'subcategory'">
+                      <ng-container *ngFor="let topic of categories">
+                        <ng-container *ngIf="topic.parent && topic.parent._id === child._id">
+                          <li>
+                            {{ topic.name }} ({{ topic.type }})
+                            <button *ngIf="!topic.hasChildren" (click)="deleteCategory(topic._id)">Eliminar</button>
+                          </li>
+                        </ng-container>
+                      </ng-container>
+                    </ul>
+                  </li>
+                </ng-container>
+              </ng-container>
+            </ul>
+          </li>
+        </ng-container>
+      </ng-container>
+    </ul>
+  </div>
+</div>
+
